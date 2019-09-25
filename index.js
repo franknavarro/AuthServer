@@ -17,6 +17,7 @@ mongoose.connect('mongodb://localhost:auth/auth', {
 
 // App Setup
 const app = express();
+
 const corsOptions = {
   origin: function(origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
@@ -27,8 +28,13 @@ const corsOptions = {
   },
 };
 app.use(cors(corsOptions));
+
+// Used for logging request to console
 app.use(morgan('combined'));
+
+// Any incoming request will be parsed as json
 app.use(bodyParser.json({ type: '*/*' }));
+
 router(app);
 
 // Server Setup
