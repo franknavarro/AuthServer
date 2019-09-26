@@ -21,11 +21,16 @@ userSchema.pre('save', function(next) {
     .catch(err => next(err));
 });
 
-userSchema.methods.comparePassword = function(candidatePassword, callback) {
-  bcrypt
-    .compare(candidatePassword, this.password)
-    .then(isMatch => callback(null, isMatch))
-    .catch(err => callback(err));
+userSchema.methods.comparePassword = function(candidatePassword) {
+  const user = this;
+  return new Promise((resolve, reject) => {
+    bcrypt
+      .compare(candidatePassword, user.password)
+      .then(isMatch => {
+        resolve(isMatch);
+      })
+      .catch(err => reject(err));
+  });
 };
 
 // Create the user model class

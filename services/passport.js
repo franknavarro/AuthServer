@@ -7,30 +7,25 @@ const LocalStrategy = require('passport-local');
 
 // Create a local strategy
 const localOptions = { usernameField: 'email' };
-const localLogin = new LocalStrategy(localOptions, function(
-  email,
-  password,
-  done,
-) {
-  User.findOne({ email: email }, function(err, user) {
-    if (err) {
-      return done(err);
-    }
-    if (!user) {
-      return done(null, false);
-    }
-
-    user.comparePassword(password, function(err, isMatch) {
-      if (err) {
-        return done(err);
-      }
-      if (!isMatch) {
+const localLogin = new LocalStrategy(localOptions, (email, password, done) => {
+  let matchingUser = undefined;
+  const noMatchError = 'No matching user and password combination found';
+  User.findOne({ email: email })
+    .then(user => {
+      if (!user) throw Error(noMatchError);
+      matchingUser = user;
+      return matchingUser.comparePassword(password);
+    })
+    .then(isMatch => {
+      if (!isMatch) throw Error(noMatchError);
+      done(null, matchingUser);
+    })
+    .catch(err => {
+      if (err.message === noMatchError) {
         return done(null, false);
       }
-
-      return done(null, user);
+      done(err);
     });
-  });
 });
 
 // set up option for JWT Strategy
@@ -40,21 +35,16 @@ const jwtOptions = {
 };
 
 // Create JWT Strategy
-const jwtLogin = new JwtStrategy(jwtOptions, function(payload, done) {
-  User.findById(payload.sub, function(err, user) {
-    // Call done with error and no user found
-    if (err) {
-      return done(err, false);
-    }
-
-    // Call done with no error and found user
-    if (user) {
-      done(null, user);
+const jwtLogin = new JwtStrategy(jwtOptions, (payload, done) => {
+  User.findById(payload.sub)
+    .then(user => {
+      // Call done with no error and found user
+      if (user) return done(null, user);
       // Call done with no error and no found user
-    } else {
       done(null, false);
-    }
-  });
+    })
+    // Call done with error and no user found
+    .catch(err => done(err, false));
 });
 
 // Tell passport to use this strategy
