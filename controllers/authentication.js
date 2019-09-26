@@ -22,7 +22,7 @@ exports.signup = (req, res, next) => {
   if (!email || !password) {
     return res
       .status(422)
-      .send({ error: 'You must provide email and password' });
+      .send({ error: 'You must provide an email and password' });
   }
 
   User.findOne({ email })
@@ -33,8 +33,8 @@ exports.signup = (req, res, next) => {
     })
     .then(user => res.json({ token: tokenForUser(user) }))
     .catch(err => {
-      if (err === 'Email is in use') {
-        return res.status(422).send({ error: err });
+      if (err.message === 'Email is in use') {
+        return res.status(422).send({ error: err.message });
       }
       next(err);
     });

@@ -9,7 +9,7 @@ const LocalStrategy = require('passport-local');
 const localOptions = { usernameField: 'email' };
 const localLogin = new LocalStrategy(localOptions, (email, password, done) => {
   let matchingUser = undefined;
-  const noMatchError = 'No matching user and password combination found';
+  const noMatchError = 'Incorrect email or password';
   User.findOne({ email: email })
     .then(user => {
       if (!user) throw Error(noMatchError);
