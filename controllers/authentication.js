@@ -17,7 +17,7 @@ exports.signin = (req, res) => {
 };
 
 exports.signup = (req, res, next) => {
-  const { email, password } = req.body;
+  const { email, password, name } = req.body;
 
   if (!email || !password) {
     return res
@@ -28,7 +28,7 @@ exports.signup = (req, res, next) => {
   User.findOne({ email })
     .then(existingUser => {
       if (existingUser) throw new Error('Email is in use');
-      const user = new User({ email, password });
+      const user = new User({ email, password, name });
       return user.save();
     })
     .then(user => res.json({ token: tokenForUser(user) }))
