@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const bcrypt = require('bcrypt-nodejs');
+const bcrypt = require('bcryptjs');
 
 //Define our user model
 const userSchema = new Schema({
@@ -12,29 +12,20 @@ const userSchema = new Schema({
 userSchema.pre('save', function(next) {
   const user = this;
 
-  bcrypt.genSalt(10, function(err, salt) {
-    if (err) {
-      return next(err);
-    }
-
-    bcrypt.hash(user.password, salt, null, function(err, hash) {
-      if (err) {
-        return next(err);
-      }
-
+  bcrypt
+    .hash(user.password, 10)
+    .then(hash => {
       user.password = hash;
       next();
-    });
-  });
+    })
+    .catch(err => next(err));
 });
 
-userSchema.methods.comparePassword = function(candidatePassword, callback) {
-  bcrypt.compare(candidatePassword, this.password, function(err, isMatch) {
-    if (err) {
-      return callback(err);
-    }
-    callback(null, isMatch);
-  });
+userSchema.methods.comparePassword = (candidatePassword, callback) => {
+  bcrypt
+    .compare(candidatePassword, this.password)
+    .then(isMatch => callback(null, isMatch))
+    .catch(err => callback(err));
 };
 
 // Create the user model class
