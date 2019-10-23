@@ -15,6 +15,9 @@ config.js
 /.pnp
 .pnp.js
 
+# DB Data
+/dbdata
+
 # testing
 /coverage
 
