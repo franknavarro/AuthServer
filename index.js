@@ -9,11 +9,16 @@ const cors = require('cors');
 const whitelist = require('./config').whitelist;
 
 // DB Setup
-mongoose.connect('mongodb://localhost:47190/auth', {
-  useNewUrlParser: true,
-  useCreateIndex: true,
-  useUnifiedTopology: true,
-});
+const mongoPort = 47190;
+mongoose
+  .connect(`mongodb://localhost:${mongoPort}/auth`, {
+    useNewUrlParser: true,
+    useCreateIndex: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => {
+    console.log(`Connected to DB on port ${mongoPort}`);
+  });
 
 // App Setup
 const app = express();
