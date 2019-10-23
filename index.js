@@ -24,13 +24,7 @@ mongoose
 const app = express();
 
 const corsOptions = {
-  origin: function(origin, callback) {
-    if (whitelist.indexOf(origin) !== -1) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
-  },
+  origin: whitelist,
 };
 app.use(cors(corsOptions));
 
