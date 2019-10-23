@@ -9,7 +9,7 @@ const cors = require('cors');
 const whitelist = require('./config').whitelist;
 
 // DB Setup
-mongoose.connect('mongodb://localhost:auth/auth', {
+mongoose.connect('mongodb://localhost:47190/auth', {
   useNewUrlParser: true,
   useCreateIndex: true,
   useUnifiedTopology: true,
@@ -38,7 +38,6 @@ app.use(bodyParser.json({ type: '*/*' }));
 router(app);
 
 // Server Setup
-const port = process.env.PORT || 3090;
+const port = process.env.PORT || 47405;
 const server = http.createServer(app);
-server.listen(port);
-console.log('Server listening on: ', port);
+server.listen(port, () => console.log(`Listiengin on port ${port}`));
